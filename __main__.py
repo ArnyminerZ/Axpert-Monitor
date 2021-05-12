@@ -116,4 +116,5 @@ def send_command(command) -> Optional[str]:
 if __name__ == '__main__':
     serial_init()
     status = send_command("QPIGS")
-    print("Got status: " + status)
+    if status:
+        print("Got status: " + status)
