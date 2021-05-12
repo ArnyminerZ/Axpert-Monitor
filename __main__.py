@@ -93,7 +93,7 @@ def send_command(command) -> Optional[str]:
         # Print the command in hex without the 0x prefix
         command_hex_np = command_hex.replace("0x","",1)
         print("Command Hex NP: " + command_hex_np)
-        command_crc = encoded_command + unhexlify(command_hex_np) + '\x0d'
+        command_crc = encoded_command + unhexlify(command_hex_np) + '\x0d'.encode('utf-8')
         # Print the CRC encoded command
         print("CRC Command: " + str(command_crc))
 
