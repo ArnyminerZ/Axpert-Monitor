@@ -4,6 +4,7 @@ def start_monitoring():
     # Reference: https://powerforum.co.za/topic/6661-pylontech-serial-communication/?do=findComment&comment=80377
     print("Starting low-frequency serial...")
     setup_ser = serial.Serial()
+    setup_ser.port = "/dev/ttyUSB1"
     setup_ser.baudrate = 1200
     setup_ser.bytesize = serial.EIGHTBITS  # number of bits per bytes
     setup_ser.parity = serial.PARITY_NONE  # set parity check: no parity
@@ -20,6 +21,7 @@ def start_monitoring():
 
     print("Starting high-frequency serial...")
     conf_ser = serial.Serial()
+    conf_ser.port = "/dev/ttyUSB1"
     conf_ser.baudrate = 115200
     conf_ser.bytesize = serial.EIGHTBITS  # number of bits per bytes
     conf_ser.parity = serial.PARITY_NONE  # set parity check: no parity
