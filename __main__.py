@@ -85,22 +85,24 @@ def send_command(command) -> Optional[str]:
         ser.flushInput()            #flush input buffer, discarding all its contents
         ser.flushOutput()           #flush output buffer, aborting current output and discard all that is in buffer
         encoded_command = command.encode('utf-8')
-        print("Command: " + str(encoded_command))
+        print("¡ Command: " + str(encoded_command))
         xmodem_crc_func = crcmod.predefined.mkCrcFun('xmodem')
         # Print the command in hex
         command_hex = hex(xmodem_crc_func(encoded_command))
-        print("Command Hex: " + command_hex)
+        print("¡ Command Hex: " + command_hex)
         # Print the command in hex without the 0x prefix
         command_hex_np = command_hex.replace("0x","",1)
-        print("Command Hex NP: " + command_hex_np)
+        print("¡ Command Hex NP: " + command_hex_np)
         command_crc = encoded_command + unhexlify(command_hex_np) + '\x0d'.encode('utf-8')
         # Print the CRC encoded command
-        print("CRC Command: " + str(command_crc))
+        print("¡ CRC Command: " + str(command_crc))
 
         # Send the command through the serial port
+        print("¡ Sending command...")
         ser.write(command_crc)
         # Read the response
-        response = ser.readline()
+        print("¡ Reading response...")
+        response = str(ser.readline())
         # Print the response
         print("Response: " + response)
         # Convert the response to hex
@@ -109,7 +111,7 @@ def send_command(command) -> Optional[str]:
         print("Response hex: " + response_hex)
         ser.close()
 
-        return str(response)
+        return response
 
     except Exception as e:
         print("!!! ERR: Could not read inverter !!!")
