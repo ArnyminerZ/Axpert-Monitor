@@ -84,17 +84,18 @@ def send_command(command) -> Optional[str]:
     try:
         ser.flushInput()            #flush input buffer, discarding all its contents
         ser.flushOutput()           #flush output buffer, aborting current output and discard all that is in buffer
-        print("Command: " + command)
+        encoded_command = command.encode('utf-8')
+        print("Command: " + encoded_command)
         xmodem_crc_func = crcmod.predefined.mkCrcFun('xmodem')
         # Print the command in hex
-        command_hex = hex(xmodem_crc_func(command.encode('utf-8')))
+        command_hex = hex(xmodem_crc_func(encoded_command))
         print("Command Hex: " + command_hex)
         # Print the command in hex without the 0x prefix
         command_hex_np = command_hex.replace("0x","",1)
         print("Command Hex NP: " + command_hex_np)
-        command_crc = command + unhexlify(command_hex_np) + '\x0d'
+        command_crc = encoded_command + unhexlify(command_hex_np) + '\x0d'
         # Print the CRC encoded command
-        print("CRC Command: " + command_crc)
+        print("CRC Command: " + str(command_crc))
 
         # Send the command through the serial port
         ser.write(command_crc)
