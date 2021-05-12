@@ -1,5 +1,6 @@
 #! /usr/bin/python
 
+from typing import Optional
 import serial, time, sys, string
 import os
 import re
@@ -71,14 +72,14 @@ def serial_init():
     ser.dsrdtr = False                  #disable hardware (DSR/DTR) flow control
     ser.writeTimeout = 2                #timeout for write
 
-def send_command(command):
+def send_command(command) -> Optional[str]:
     try:
         print("--- Opening Serial port... ---")
         ser.open()
     except Exception as e:
         print("!!! ERR: Could not open serial port !!!")
         print(str(e))
-        return
+        return None
 
     try:
         ser.flushInput()            #flush input buffer, discarding all its contents
@@ -105,10 +106,14 @@ def send_command(command):
         print("Response hex: " + response_hex)
         ser.close()
 
+        return str(response)
+
     except Exception as e:
         print("!!! ERR: Could not read inverter !!!")
         print(str(e))
-        return
+        return None
 
 if __name__ == '__main__':
-    print("Hello from main!")
+    serial_init()
+    status = send_command("QPIGS")
+    print("Got status: " + status)
