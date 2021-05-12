@@ -85,7 +85,7 @@ def send_command(command) -> Optional[str]:
         ser.flushInput()            #flush input buffer, discarding all its contents
         ser.flushOutput()           #flush output buffer, aborting current output and discard all that is in buffer
         encoded_command = command.encode('utf-8')
-        print("Command: " + encoded_command)
+        print("Command: " + str(encoded_command))
         xmodem_crc_func = crcmod.predefined.mkCrcFun('xmodem')
         # Print the command in hex
         command_hex = hex(xmodem_crc_func(encoded_command))
