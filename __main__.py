@@ -156,7 +156,7 @@ if __name__ == '__main__':
             "device_status": items[16],
         }
 
-        output_json = json.dump(output)
+        output_json = json.dumps(output)
         request_result = requests.get(
             'http://arnyminerz.com:84/input/post?node=runar&fulljson=' + output_json
         )
