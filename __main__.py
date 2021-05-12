@@ -87,10 +87,12 @@ def send_command(command) -> Optional[str]:
         print("Command: " + command)
         xmodem_crc_func = crcmod.predefined.mkCrcFun('xmodem')
         # Print the command in hex
-        print("Command Hex: " + hex(xmodem_crc_func(command)))
+        command_hex = hex(xmodem_crc_func(command.encode('utf-8')))
+        print("Command Hex: " + command_hex)
         # Print the command in hex without the 0x prefix
-        print("Command Hex NP: " + hex(xmodem_crc_func(command)).replace("0x","",1))
-        command_crc = command + unhexlify(hex(xmodem_crc_func(command)).replace('0x','',1)) + '\x0d'
+        command_hex_np = command_hex.replace("0x","",1)
+        print("Command Hex NP: " + command_hex_np)
+        command_crc = command + unhexlify(command_hex_np) + '\x0d'
         # Print the CRC encoded command
         print("CRC Command: " + command_crc)
 
