@@ -7,6 +7,7 @@ import json
 import time
 import os
 import crcmod
+import psutil
 from binascii import unhexlify
 import requests
 
@@ -135,13 +136,21 @@ def temperature_of_raspberry_pi():
 def routine():
     serial_init()
     status = send_command("QPIGS")
-    if status:
+    parallel_status = send_command("QPGS0")
+    if status and parallel_status:
         # Clean all the non space/dot/numeric characters
         status_clean_list = re.findall('\d+| |\.', status)
         # Stick all the elements together
         status_clean = "".join(status_clean_list)
         # Split in each space
         status_items = status_clean.split(' ')
+        
+        # Clean all the non space/dot/numeric characters
+        parallel_clean_list = re.findall('\d+| |\.', parallel_status)
+        # Stick all the elements together
+        parallel_clean = "".join(parallel_clean_list)
+        # Split in each space
+        parallel_items = parallel_clean.split(' ')
 
         rpi_temp = temperature_of_raspberry_pi()
 
@@ -165,6 +174,16 @@ def routine():
             "battery_voltage": status_items[14],
             "battery_current": status_items[15],
             "device_status": status_items[16],
+
+            "parallel_number": parallel_items[0],
+            "serial_number": parallel_items[1],
+            "work_mode": parallel_items[2],
+            "fault_code": parallel_items[3],
+            "inverter_status": parallel_items[19],
+            "output_mode": parallel_items[20],
+            "charger_source_priority": parallel_items[21],
+            "max_charge_current": parallel_items[22],
+            "max_charger_range": parallel_items[23],
         }
 
         output_json = json.dumps(output)
