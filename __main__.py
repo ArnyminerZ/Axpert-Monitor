@@ -158,8 +158,7 @@ if __name__ == '__main__':
 
         output_json = json.dumps(output)
         request_result = requests.get(
-            'http://arnyminerz.com:84/input/post?node=runar&fulljson=' + output_json
+            'http://arnyminerz.com:84/input/post?apikey=ec87cf7f73d61bf29ea0896f1994572f&node=runar&fulljson=' + output_json
         )
 
-        print("Request result: ")
-        print(request_result)
+        print("Request result: " + request_result.text)
