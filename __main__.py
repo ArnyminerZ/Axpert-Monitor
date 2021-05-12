@@ -55,18 +55,21 @@ from binascii import unhexlify
 #PPCP001        # Setting parallel device charger priority: SolarFirst - nefunguje
 #PPCP002        # Setting parallel device charger priority: OnlySolarCharging - nefunguje
 
-ser = serial.Serial()
-ser.port = "/dev/ttyUSB0"
-ser.baudrate = 2400
-ser.bytesize = serial.EIGHTBITS     #number of bits per bytes
-ser.parity = serial.PARITY_NONE     #set parity check: no parity
-ser.stopbits = serial.STOPBITS_ONE  #number of stop bits
-#ser.timeout = none                 #block read
-ser.timeout = 1                     #non-block read
-ser.xonxoff = False                 #disable software flow control
-ser.rtscts = False                  #disable hardware (RTS/CTS) flow control
-ser.dsrdtr = False                  #disable hardware (DSR/DTR) flow control
-ser.writeTimeout = 2                #timeout for write
+ser = None
+def serial_init():
+    global ser
+    ser = serial.Serial()
+    ser.port = "/dev/ttyUSB0"
+    ser.baudrate = 2400
+    ser.bytesize = serial.EIGHTBITS     #number of bits per bytes
+    ser.parity = serial.PARITY_NONE     #set parity check: no parity
+    ser.stopbits = serial.STOPBITS_ONE  #number of stop bits
+    #ser.timeout = none                 #block read
+    ser.timeout = 1                     #non-block read
+    ser.xonxoff = False                 #disable software flow control
+    ser.rtscts = False                  #disable hardware (RTS/CTS) flow control
+    ser.dsrdtr = False                  #disable hardware (DSR/DTR) flow control
+    ser.writeTimeout = 2                #timeout for write
 
 def send_command(command):
     try:
@@ -107,5 +110,5 @@ def send_command(command):
         print(str(e))
         return
 
-if __name__ == 'main':
+if __name__ == '__main__':
     print("Hello from main!")
