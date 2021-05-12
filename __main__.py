@@ -130,7 +130,7 @@ if __name__ == '__main__':
     status = send_command("QPIGS")
     if status:
         # Clean all the non space/dot/numeric characters
-        clean_list = re.search('\d+| |\.', status)
+        clean_list = re.findall('\d+| |\.', status)
         # Stick all the elements together
         clean = "".join(clean_list)
         # Split in each space
