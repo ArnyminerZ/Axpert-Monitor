@@ -4,6 +4,7 @@ from typing import Optional
 import serial
 import re
 import json
+import time
 import crcmod
 from binascii import unhexlify
 import requests
@@ -125,7 +126,7 @@ def send_command(command) -> Optional[str]:
         return None
 
 
-if __name__ == '__main__':
+def routine():
     serial_init()
     status = send_command("QPIGS")
     if status:
@@ -162,3 +163,9 @@ if __name__ == '__main__':
         )
 
         print("Request result: " + request_result.text)
+
+
+if __name__ == '__main__':
+    while True:
+        routine()
+        time.sleep(5)
