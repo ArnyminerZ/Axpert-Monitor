@@ -7,7 +7,6 @@ import json
 import time
 import os
 import crcmod
-import psutil
 from binascii import unhexlify
 import requests
 
