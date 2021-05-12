@@ -5,6 +5,7 @@ import serial
 import re
 import json
 import time
+import os
 import crcmod
 from binascii import unhexlify
 import requests
@@ -126,35 +127,44 @@ def send_command(command) -> Optional[str]:
         return None
 
 
+def temperature_of_raspberry_pi():
+    cpu_temp = os.popen("vcgencmd measure_temp").readline()
+    return cpu_temp.replace("temp=", "")
+
+
 def routine():
     serial_init()
     status = send_command("QPIGS")
     if status:
         # Clean all the non space/dot/numeric characters
-        clean_list = re.findall('\d+| |\.', status)
+        status_clean_list = re.findall('\d+| |\.', status)
         # Stick all the elements together
-        clean = "".join(clean_list)
+        status_clean = "".join(status_clean_list)
         # Split in each space
-        items = clean.split(' ')
+        status_items = status_clean.split(' ')
+
+        rpi_temp = temperature_of_raspberry_pi()
 
         output = {
-            "grid_voltage": items[0],
-            "grid_frequency": items[1],
-            "output_voltage": items[2],
-            "output_frequency": items[3],
-            "output_app_power": items[4],
-            "output_active_power": items[5],
-            "output_load_percent": items[6],
-            "bus_voltage": items[7],
-            "battery_voltage": items[8],
-            "battery_charging_current": items[9],
-            "battery_capacity": items[10],
-            "inverter_temp": items[11],
-            "pv_battery_current": items[12],
-            "pv_voltage": items[13],
-            "battery_voltage": items[14],
-            "battery_current": items[15],
-            "device_status": items[16],
+            "rpi_temp": rpi_temp,
+
+            "grid_voltage": status_items[0],
+            "grid_frequency": status_items[1],
+            "output_voltage": status_items[2],
+            "output_frequency": status_items[3],
+            "output_app_power": status_items[4],
+            "output_active_power": status_items[5],
+            "output_load_percent": status_items[6],
+            "bus_voltage": status_items[7],
+            "battery_voltage": status_items[8],
+            "battery_charging_current": status_items[9],
+            "battery_capacity": status_items[10],
+            "inverter_temp": status_items[11],
+            "pv_battery_current": status_items[12],
+            "pv_voltage": status_items[13],
+            "battery_voltage": status_items[14],
+            "battery_current": status_items[15],
+            "device_status": status_items[16],
         }
 
         output_json = json.dumps(output)
