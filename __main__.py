@@ -1,6 +1,7 @@
 #! /usr/bin/python
 
 from typing import Optional
+from requests.models import Response
 import serial
 import re
 import json
@@ -58,6 +59,13 @@ import requests
 # PPCP000        # Setting parallel device charger priority: UtilityFirst - nefunguje
 # PPCP001        # Setting parallel device charger priority: SolarFirst - nefunguje
 # PPCP002        # Setting parallel device charger priority: OnlySolarCharging - nefunguje
+
+API_KEY = "ec87cf7f73d61bf29ea0896f1994572f" # The EmonCMS write-enabled API key
+NODE_NAME = "runar" # The EmonCMS node name to publish to
+SERVER_HOST = "arnyminerz.com" # The server's hostname, may be an address or an IP
+SERVER_PORT = 84 # The port on the server
+SERVER_PATH = "" # Can be empty, or must end with /
+USE_HTTPS = False # If https should be used, if False, http will be the option
 
 ser = None
 
@@ -132,6 +140,14 @@ def temperature_of_raspberry_pi():
     return cpu_temp.replace("temp=", "")
 
 
+def emon_send(output: dict) -> Response:
+    output_json = json.dumps(output)
+    protocol = "https" if USE_HTTPS else "http"
+    return requests.get(
+        f"{protocol}://{SERVER_HOST}:{SERVER_PORT}/{SERVER_PATH}input/post?apikey={API_KEY}&node={NODE_NAME}&fulljson=" + output_json
+    )
+
+
 def routine():
     serial_init()
     status = send_command("QPIGS")
@@ -185,15 +201,21 @@ def routine():
             "max_charger_range": parallel_items[23],
         }
 
-        output_json = json.dumps(output)
-        request_result = requests.get(
-            'http://arnyminerz.com:84/input/post?apikey=ec87cf7f73d61bf29ea0896f1994572f&node=runar&fulljson=' + output_json
-        )
+        request_result = emon_send(output)
 
         print("Request result: " + request_result.text)
 
 
 if __name__ == '__main__':
+    # First get the device protocol ID
+    protocol_id = send_command("QPI")
+    
+    # Then the device's Serial number
+    serial_number = send_command("QID")
+
+    # Now the firmware version
+    firmware_version = send_command("QVFW")
+
     while True:
         routine()
         time.sleep(5)
