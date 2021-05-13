@@ -72,7 +72,7 @@ if __name__ == '__main__':
     MQTT_TOPIC = configuration["mqtt_topic"] if "mqtt_topic" in configuration else ""
 
     # Initialize MQTT
-    mqtt_setup()
+    mqtt_setup(configuration)
 
     ser = serial_init()
 
