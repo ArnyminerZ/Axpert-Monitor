@@ -12,7 +12,7 @@ def start_monitoring():
     print("  Opening port...")
     setup_ser.open()
     print("  Writing start hex...")
-    setup_ser.write(bytes.fromhex('7E32303031343638324330303438353230464343330D'))
+    setup_ser.write(bytes.fromhex('7E3230303134363432453030323031464433350D'))
     print("  Reading result line...")
     result = setup_ser.readline()
     print(result)
