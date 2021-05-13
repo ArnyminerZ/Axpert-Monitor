@@ -66,11 +66,8 @@ API_KEY = ""
 NODE_NAME = ""
 EMONCMS_INSTANCE = ""
 
-ser = None
 
-
-def serial_init():
-    global ser
+def serial_init() -> serial.Serial:
     ser = serial.Serial()
     ser.port = "/dev/ttyUSB0"
     ser.baudrate = 2400
@@ -85,7 +82,7 @@ def serial_init():
     ser.writeTimeout = 2  # timeout for write
 
 
-def send_command(command) -> Optional[str]:
+def send_command(ser: serial.Serial, command: str) -> Optional[str]:
     try:
         print("--- Opening Serial port... ---")
         ser.open()
@@ -146,10 +143,9 @@ def emon_send(output: dict) -> Response:
     )
 
 
-def routine():
-    serial_init()
-    status = send_command("QPIGS")
-    parallel_status = send_command("QPGS0")
+def routine(ser: serial.Serial):
+    status = send_command(ser, "QPIGS")
+    parallel_status = send_command(ser, "QPGS0")
     if status and parallel_status:
         # Clean all the non space/dot/numeric characters
         status_clean_list = re.findall('\d+| |\.', status)
@@ -214,19 +210,21 @@ if __name__ == '__main__':
     API_KEY = configuration["api_key"]
     NODE_NAME = configuration["node_name"]
 
+    ser = serial_init()
+
     # First get the device protocol ID
-    protocol_id = send_command("QPI")
+    protocol_id = send_command(ser, "QPI")
     
     # Then the device's Serial number
-    serial_number = send_command("QID")
+    serial_number = send_command(ser, "QID")
 
     # Now the firmware version
-    firmware_version = send_command("QVFW")
+    firmware_version = send_command(ser, "QVFW")
 
-    print("protocol_id:      " + protocol_id)
-    print("serial_number:    " + serial_number)
-    print("firmware_version: " + firmware_version)
+    print("protocol_id:      " + str(protocol_id))
+    print("serial_number:    " + str(serial_number))
+    print("firmware_version: " + str(firmware_version))
 
     while True:
-        routine()
+        routine(ser)
         time.sleep(5)
