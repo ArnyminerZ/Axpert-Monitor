@@ -1,4 +1,5 @@
 import serial
+import time
 
 def start_monitoring():
     # Reference: https://powerforum.co.za/topic/6661-pylontech-serial-communication/?do=findComment&comment=80377
@@ -11,6 +12,7 @@ def start_monitoring():
     setup_ser.stopbits = serial.STOPBITS_ONE  # number of stop bits
     print("  Opening port...")
     setup_ser.open()
+    time.sleep(1)
     print("  Writing start hex...")
     setup_ser.write(bytes.fromhex('7E3230303134363432453030323031464433350D'))
     print("  Reading result line...")
