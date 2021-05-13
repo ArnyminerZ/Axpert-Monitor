@@ -5,7 +5,7 @@ def start_monitoring():
     print("Starting low-frequency serial...")
     setup_ser = serial.Serial()
     setup_ser.port = "/dev/ttyUSB1"
-    setup_ser.baudrate = 9600
+    setup_ser.baudrate = 1200
     setup_ser.bytesize = serial.EIGHTBITS  # number of bits per bytes
     setup_ser.parity = serial.PARITY_NONE  # set parity check: no parity
     setup_ser.stopbits = serial.STOPBITS_ONE  # number of stop bits
