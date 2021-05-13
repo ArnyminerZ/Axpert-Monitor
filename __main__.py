@@ -6,6 +6,7 @@ import json
 import os
 import requests
 import logging
+import time
 
 import config
 from axpert import *
@@ -15,6 +16,8 @@ from serial_utils import serial_init
 API_KEY = ""
 NODE_NAME = ""
 EMONCMS_INSTANCE = ""
+
+ROUTINE_DELAY = 5
 
 LOGGING_LEVEL = logging.INFO
 
@@ -93,3 +96,4 @@ if __name__ == '__main__':
 
     while True:
         routine(ser)
+        time.sleep(ROUTINE_DELAY)
