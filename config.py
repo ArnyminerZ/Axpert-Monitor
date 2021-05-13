@@ -121,7 +121,7 @@ def load_configuration():
         config['server']['hostname'] = hostname
         config['server']['port'] = str(port)
         config['server']['path'] = path
-        config['server']['protocl'] = protocol
+        config['server']['protocol'] = protocol
         config['emoncms']['apikey'] = api_key
         config['emoncms']['node_name'] = node_name
         with open(CONFIG_FILE_NAME, 'w') as configfile:
@@ -132,7 +132,7 @@ def load_configuration():
             "hostname": config['server']['hostname'],
             "port": int(config['server']['port']),
             "path": config['server']['path'],
-            "https": config['server']['https'],
+            "protocol": config['server']['protocol'],
             "api_key": config['emoncms']['apikey'],
             "node_name": config['emoncms']['node_name'],
         }
