@@ -119,3 +119,26 @@ def axpert_warning_status(ser: Serial) -> Optional[dict]:
         "error_mppt_overload_warning": code[28],
         "error_battery_too_low": code[29],
     }
+
+def axpert_software_info(ser: Serial) -> Optional[dict]:
+    # First get the device protocol ID
+    protocol_id_raw = send_command(ser, "QPI")
+
+    # Then the device's Serial number
+    serial_number_raw = send_command(ser, "QID")
+
+    # Now the firmware version
+    firmware_version_raw = send_command(ser, "QVFW")
+
+    if not protocol_id_raw or not serial_number_raw or not firmware_version_raw:
+        return None
+
+    protocol_id = str(protocol_id_raw)[1:5]
+    serial_number = str(serial_number_raw)[1:15]
+    firmware_version = str(firmware_version_raw)[7:15]
+
+    return {
+        "protocol_id": protocol_id,
+        "serial_number": serial_number,
+        "firmware_version": firmware_version,
+    }
