@@ -44,7 +44,7 @@ def routine(ser: serial.Serial):
         logging.info("General request result: " + request_result.text)
 
     warning = axpert_warning_status(ser)
-    logging.info("Warning: ", end="")
+    logging.info("Warning: ")
     logging.info(warning)
     if warning:
         request_result = emon_send(status)
