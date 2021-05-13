@@ -140,4 +140,5 @@ def load_configuration():
             data["mqtt_address"] = config["mqtt"]["address"]
             data["mqtt_port"] = config["mqtt"]["port"] if "port" in config["mqtt"] else 1883
             data["mqtt_keepalive"] = config["mqtt"]["keepalive"] if "keepalive" in config["mqtt"] else 60
+            data["mqtt_topic"] = config["mqtt"]["basetopic"] if "basetopic" in config["mqtt"] else 60
         return data
