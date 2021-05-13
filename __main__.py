@@ -80,6 +80,7 @@ def serial_init() -> serial.Serial:
     ser.rtscts = False  # disable hardware (RTS/CTS) flow control
     ser.dsrdtr = False  # disable hardware (DSR/DTR) flow control
     ser.writeTimeout = 2  # timeout for write
+    return ser
 
 
 def send_command(ser: serial.Serial, command: str) -> Optional[str]:
