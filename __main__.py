@@ -11,6 +11,7 @@ import time
 import config
 from axpert import *
 from serial_utils import serial_init
+from mqtt import mqtt_setup
 
 
 API_KEY = ""
@@ -64,6 +65,9 @@ if __name__ == '__main__':
     EMONCMS_INSTANCE = f"{protocol}://{hostname}:{port}/{path}"
     API_KEY = configuration["api_key"]
     NODE_NAME = configuration["node_name"]
+
+    # Initialize MQTT
+    mqtt_setup()
 
     ser = serial_init()
 
