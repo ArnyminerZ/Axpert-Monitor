@@ -154,7 +154,7 @@ def routine(ser: serial.Serial):
         status_clean = "".join(status_clean_list)
         # Split in each space
         status_items = status_clean.split(' ')
-        
+
         # Clean all the non space/dot/numeric characters
         parallel_clean_list = re.findall('\d+| |\.', parallel_status)
         # Stick all the elements together
@@ -214,17 +214,27 @@ if __name__ == '__main__':
     ser = serial_init()
 
     # First get the device protocol ID
-    protocol_id = send_command(ser, "QPI")
-    
+    protocol_id_raw = send_command(ser, "QPI")
+    protocol_id = str(protocol_id_raw)[1:5]
+
     # Then the device's Serial number
-    serial_number = send_command(ser, "QID")
+    serial_number_raw = send_command(ser, "QID")
+    serial_number = str(serial_number_raw)[1:15]
 
     # Now the firmware version
-    firmware_version = send_command(ser, "QVFW")
+    firmware_version_raw = send_command(ser, "QVFW")
+    firmware_version = str(firmware_version_raw)[7:15]
 
-    print("protocol_id:      " + str(protocol_id))
-    print("serial_number:    " + str(serial_number))
-    print("firmware_version: " + str(firmware_version))
+    print("protocol_id:      " + protocol_id)
+    print("serial_number:    " + serial_number)
+    print("firmware_version: " + firmware_version)
+    
+    print("¡ Sending hardware info...")
+    emon_send({
+        "protocol_id": protocol_id,
+        "serial_number": serial_number,
+        "firmware_version": firmware_version,
+    })
 
     while True:
         routine(ser)
