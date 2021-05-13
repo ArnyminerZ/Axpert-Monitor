@@ -11,12 +11,13 @@ import time
 import config
 from axpert import *
 from serial_utils import serial_init
-from mqtt import mqtt_setup
+from mqtt import mqtt_setup, mqtt_publish_dict
 
 
 API_KEY = ""
 NODE_NAME = ""
 EMONCMS_INSTANCE = ""
+MQTT_TOPIC = ""
 
 ROUTINE_DELAY = 5
 
@@ -43,15 +44,18 @@ def routine(ser: serial.Serial):
     if status:
         request_result = emon_send(status)
         logging.info("General request result: " + request_result.text)
+        mqtt_publish_dict(MQTT_TOPIC, status)
 
     warning = axpert_warning_status(ser)
     if warning:
         request_result = emon_send(warning)
         logging.info("Warning request result: " + request_result.text)
+        mqtt_publish_dict(MQTT_TOPIC, warning)
 
     rpi_temp = temperature_of_raspberry_pi()
     output = {"rpi_temp": rpi_temp}
     request_result = emon_send(output)
+    mqtt_publish_dict(MQTT_TOPIC, output)
     logging.info("Temp Request result: " + request_result.text)
 
 
@@ -65,6 +69,7 @@ if __name__ == '__main__':
     EMONCMS_INSTANCE = f"{protocol}://{hostname}:{port}/{path}"
     API_KEY = configuration["api_key"]
     NODE_NAME = configuration["node_name"]
+    MQTT_TOPIC = configuration["mqtt_topic"] if "mqtt_topic" in configuration else ""
 
     # Initialize MQTT
     mqtt_setup()
@@ -74,6 +79,7 @@ if __name__ == '__main__':
     software_info = axpert_software_info(ser)
     if software_info:
         software_info_result = emon_send(software_info)
+        mqtt_publish_dict(MQTT_TOPIC, software_info)
         logging.info("Software info result: " + software_info_result.text)
 
     while True:
