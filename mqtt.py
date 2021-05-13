@@ -24,7 +24,9 @@ def on_subscribe(client, userdata, mid, granted_qos):
 
 
 def mqtt_publish(topic, message):
-    client.publish(topic, payload=message)
+    if client is not None:
+        client.publish(topic, payload=message)
+        logging.info(f"Published payload on {topic}.")
 
 
 def mqtt_connect(address, port, keepalive):
