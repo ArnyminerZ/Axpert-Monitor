@@ -41,17 +41,19 @@ def routine(ser: serial.Serial):
     status = axpert_general_status(ser)
     if status:
         request_result = emon_send(status)
-        logging.info(">> General request result: " + request_result.text)
+        logging.info("General request result: " + request_result.text)
 
     warning = axpert_warning_status(ser)
+    logging.info("Warning: ", end="")
+    logging.info(warning)
     if warning:
         request_result = emon_send(status)
-        logging.info(">> Warning request result: " + request_result.text)
+        logging.info("Warning request result: " + request_result.text)
 
     rpi_temp = temperature_of_raspberry_pi()
     output = {"rpi_temp": rpi_temp}
     request_result = emon_send(output)
-    logging.info(">> Temp Request result: " + request_result.text)
+    logging.info("Temp Request result: " + request_result.text)
 
 
 if __name__ == '__main__':
@@ -92,7 +94,7 @@ if __name__ == '__main__':
         "serial_number": serial_number,
         "firmware_version": firmware_version,
     })
-    logging.info(">> Hardware info result: " + hardware_info_result.text)
+    logging.info("Hardware info result: " + hardware_info_result.text)
 
     while True:
         routine(ser)
