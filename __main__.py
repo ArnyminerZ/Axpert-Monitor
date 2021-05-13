@@ -40,23 +40,26 @@ def emon_send(output: dict) -> Response:
 
 
 def routine(ser: serial.Serial):
-    status = axpert_general_status(ser)
-    if status:
-        request_result = emon_send(status)
-        logging.info("General request result: " + request_result.text)
-        mqtt_publish_dict(MQTT_TOPIC, status)
+    try:
+        status = axpert_general_status(ser)
+        if status:
+            request_result = emon_send(status)
+            logging.info("General request result: " + request_result.text)
+            mqtt_publish_dict(MQTT_TOPIC, status)
 
-    warning = axpert_warning_status(ser)
-    if warning:
-        request_result = emon_send(warning)
-        logging.info("Warning request result: " + request_result.text)
-        mqtt_publish_dict(MQTT_TOPIC, warning)
+        warning = axpert_warning_status(ser)
+        if warning:
+            request_result = emon_send(warning)
+            logging.info("Warning request result: " + request_result.text)
+            mqtt_publish_dict(MQTT_TOPIC, warning)
 
-    rpi_temp = temperature_of_raspberry_pi()
-    output = {"rpi_temp": rpi_temp}
-    request_result = emon_send(output)
-    mqtt_publish_dict(MQTT_TOPIC, output)
-    logging.info("Temp Request result: " + request_result.text)
+        rpi_temp = temperature_of_raspberry_pi()
+        output = {"rpi_temp": rpi_temp}
+        request_result = emon_send(output)
+        mqtt_publish_dict(MQTT_TOPIC, output)
+        logging.info("Temp Request result: " + request_result.text)
+    except Exception as e:
+        logging.error("Could not process routine: " + str(e))
 
 
 if __name__ == '__main__':
