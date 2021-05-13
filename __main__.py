@@ -67,32 +67,10 @@ if __name__ == '__main__':
 
     ser = serial_init()
 
-    # First get the device protocol ID
-    protocol_id_raw = send_command(ser, "QPI")
-    protocol_id = str(protocol_id_raw)[1:5]
-
-    # Then the device's Serial number
-    serial_number_raw = send_command(ser, "QID")
-    serial_number = str(serial_number_raw)[1:15]
-
-    # Now the firmware version
-    firmware_version_raw = send_command(ser, "QVFW")
-    firmware_version = str(firmware_version_raw)[7:15]
-
-    # Now the Device rating information
-    device_rating_information = send_command(ser, "QPIRI")
-
-    logging.debug("protocol_id:      " + protocol_id)
-    logging.debug("serial_number:    " + serial_number)
-    logging.debug("firmware_version: " + firmware_version)
-
-    logging.debug("Sending hardware info...")
-    hardware_info_result = emon_send({
-        "protocol_id": protocol_id,
-        "serial_number": serial_number,
-        "firmware_version": firmware_version,
-    })
-    logging.info("Hardware info result: " + hardware_info_result.text)
+    software_info = axpert_software_info(ser)
+    if software_info:
+        software_info_result = emon_send(software_info)
+        logging.info("Software info result: " + software_info_result.text)
 
     while True:
         routine(ser)
