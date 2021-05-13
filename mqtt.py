@@ -51,7 +51,7 @@ def mqtt_connect(address, port, keepalive):
     client.loop_start()
 
 
-def mqtt_setup(configuration: dict[str, Any]):
+def mqtt_setup(configuration):
     if "mqtt_address" in configuration:
         logging.debug("Getting MQTT settings...")
         address = configuration["mqtt_address"]
