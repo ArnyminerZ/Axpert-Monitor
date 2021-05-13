@@ -34,7 +34,7 @@ def load_configuration():
                 hostname = host
         print("")
 
-        print("Please, input your server's hsotname.")
+        print("Please, input your server's port.")
         print("This must be a number, for example, the default http port is 80.")
         port = -1
         while port < 0:
@@ -92,6 +92,8 @@ def load_configuration():
         print("")
 
         print("Configuration process complete, storing...")
+        config['server'] = {}
+        config['emoncms'] = {}
         config['server']['hostname'] = hostname
         config['server']['port'] = port
         config['server']['path'] = path
