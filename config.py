@@ -7,6 +7,7 @@ config = configparser.ConfigParser()
 
 CONFIG_FILE_NAME = "config.ini"
 
+
 def load_configuration():
     is_config_valid = True
     if os.path.isfile(CONFIG_FILE_NAME):
@@ -88,17 +89,20 @@ def load_configuration():
         if valid_request.status_code == 200:
             try:
                 valid_request.json()
+                print("ok")
             except JSONDecodeError:
                 valid_data = False
         else:
             valid_data = False
         if not valid_data:
-            print("The introduced API key is not valid. This can be caused because you are")
-            print(" not connected to the Internet, or simply because the API key is not")
-            print(" valid. Type \"yes\" to continue.")
+            print("error!")
+            print("The introduced API key is not valid. This can be caused because you")
+            print(" are not connected to the Internet, or simply because the API key is")
+            print(" not valid. Type \"yes\" to continue.")
             shall_continue = input("> ")
             if shall_continue != "yes":
                 exit()
+        print("")
 
         print("Please, enter your desired node name. This can be almost anything, it's")
         print(" just an identifier for your device at EmonCMS.")
