@@ -45,7 +45,7 @@ def routine(ser: serial.Serial):
 
     warning = axpert_warning_status(ser)
     if warning:
-        request_result = emon_send(status)
+        request_result = emon_send(warning)
         logging.info("Warning request result: " + request_result.text)
 
     rpi_temp = temperature_of_raspberry_pi()
