@@ -119,7 +119,7 @@ def load_configuration():
         config['server'] = {}
         config['emoncms'] = {}
         config['server']['hostname'] = hostname
-        config['server']['port'] = port
+        config['server']['port'] = str(port)
         config['server']['path'] = path
         config['server']['protocl'] = protocol
         config['emoncms']['apikey'] = api_key
@@ -130,7 +130,7 @@ def load_configuration():
     else:
         return {
             "hostname": config['server']['hostname'],
-            "port": config['server']['port'],
+            "port": int(config['server']['port']),
             "path": config['server']['path'],
             "https": config['server']['https'],
             "api_key": config['emoncms']['apikey'],
