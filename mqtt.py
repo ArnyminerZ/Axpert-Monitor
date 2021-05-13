@@ -2,8 +2,6 @@ from typing import Any, Optional
 import paho.mqtt.client as mqtt
 import logging
 
-logging.basicConfig(level=logging.DEBUG)
-
 client: Optional[mqtt.Client] = None
 
 
