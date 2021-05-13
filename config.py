@@ -1,5 +1,7 @@
 import configparser
 import os
+import requests
+from simplejson.errors import JSONDecodeError
 
 config = configparser.ConfigParser()
 
@@ -57,20 +59,19 @@ def load_configuration():
 
         print("Do you want to use https?")
         print("Type yes or no")
-        use_https = None
-        while use_https is None:
+        protocol = None
+        while protocol is None:
             https_str = input("> ")
             if https_str == "yes":
-                use_https = True
+                protocol = 'https'
             elif https_str == "no":
-                use_https = False
+                protocol = 'http'
             else:
                 print("Please, type \"yes\" or \"no\".")
         print("")
 
         print("Please, enter your EmonCMS write-enabled API key. You can get it at:")
-        print("https" if use_https else "http", end="")
-        print(f"://{hostname}:{port}/input/api")
+        print(f"{protocol}://{hostname}:{port}/input/api")
         api_key = None
         while not api_key:
             key = input("> ")
@@ -79,6 +80,25 @@ def load_configuration():
             else:
                 api_key = key
         print("")
+
+        print("Checking key validity...", end="")
+        addr = f"{protocol}://{hostname}:{port}/input/list/?apikey={api_key}"
+        valid_request = requests.get(addr)
+        valid_data = True
+        if valid_request.status_code == 200:
+            try:
+                valid_request.json()
+            except JSONDecodeError:
+                valid_data = False
+        else:
+            valid_data = False
+        if not valid_data:
+            print("The introduced API key is not valid. This can be caused because you are")
+            print(" not connected to the Internet, or simply because the API key is not")
+            print(" valid. Type \"yes\" to continue.")
+            shall_continue = input("> ")
+            if shall_continue != "yes":
+                exit()
 
         print("Please, enter your desired node name. This can be almost anything, it's")
         print(" just an identifier for your device at EmonCMS.")
@@ -97,7 +117,7 @@ def load_configuration():
         config['server']['hostname'] = hostname
         config['server']['port'] = port
         config['server']['path'] = path
-        config['server']['https'] = use_https
+        config['server']['protocl'] = protocol
         config['emoncms']['apikey'] = api_key
         config['emoncms']['node_name'] = node_name
         with open(CONFIG_FILE_NAME, 'w') as configfile:
