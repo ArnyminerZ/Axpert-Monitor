@@ -1,8 +1,10 @@
-from typing import Any
+from typing import Any, Optional
 import paho.mqtt.client as mqtt
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
+
+client: Optional[mqtt.Client] = None
 
 
 def on_connect(client, userdata, flags, rc):
@@ -23,7 +25,12 @@ def on_subscribe(client, userdata, mid, granted_qos):
     logging.info(f"MQTT subscribed with qos {granted_qos}.")
 
 
+def mqtt_publish(topic, message):
+    client.publish(topic, payload=message)
+
+
 def mqtt_connect(address, port, keepalive):
+    global client
     logging.debug("Initializing MQTT...")
     client = mqtt.Client()
     client.on_connect = on_connect
