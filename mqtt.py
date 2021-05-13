@@ -23,9 +23,16 @@ def on_subscribe(client, userdata, mid, granted_qos):
     logging.info(f"MQTT subscribed with qos {granted_qos}.")
 
 
-def mqtt_publish(topic, message):
+def mqtt_publish(topic: str, message: str):
     if client is not None:
         client.publish(topic, payload=message)
+        logging.info(f"Published payload on {topic}.")
+
+
+def mqtt_publish_dict(topic: str, payload: dict):
+    if client is not None:
+        for key in payload:
+            client.publish(f"{topic}/{key}", payload=payload[key])
         logging.info(f"Published payload on {topic}.")
 
 
