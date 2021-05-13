@@ -11,6 +11,8 @@ import crcmod
 from binascii import unhexlify
 import requests
 
+import config
+
 # Commands with CRC cheats
 # QPI            # Device protocol ID inquiry
 # QID            # The device serial number inquiry
@@ -60,12 +62,9 @@ import requests
 # PPCP001        # Setting parallel device charger priority: SolarFirst - nefunguje
 # PPCP002        # Setting parallel device charger priority: OnlySolarCharging - nefunguje
 
-API_KEY = "ec87cf7f73d61bf29ea0896f1994572f" # The EmonCMS write-enabled API key
-NODE_NAME = "runar" # The EmonCMS node name to publish to
-SERVER_HOST = "arnyminerz.com" # The server's hostname, may be an address or an IP
-SERVER_PORT = 84 # The port on the server
-SERVER_PATH = "" # Can be empty, or must end with /
-USE_HTTPS = False # If https should be used, if False, http will be the option
+API_KEY = ""
+NODE_NAME = ""
+EMONCMS_INSTANCE = ""
 
 ser = None
 
@@ -142,9 +141,8 @@ def temperature_of_raspberry_pi():
 
 def emon_send(output: dict) -> Response:
     output_json = json.dumps(output)
-    protocol = "https" if USE_HTTPS else "http"
     return requests.get(
-        f"{protocol}://{SERVER_HOST}:{SERVER_PORT}/{SERVER_PATH}input/post?apikey={API_KEY}&node={NODE_NAME}&fulljson=" + output_json
+        f"{EMONCMS_INSTANCE}input/post?apikey={API_KEY}&node={NODE_NAME}&fulljson=" + output_json
     )
 
 
@@ -207,6 +205,16 @@ def routine():
 
 
 if __name__ == '__main__':
+    # Load configuration
+    configuration = config.load_configuration()
+    protocol = configuration["protocol"]
+    hostname = configuration["hostname"]
+    port = configuration["port"]
+    path = configuration["path"]
+    EMONCMS_INSTANCE = f"{protocol}://{hostname}:{port}/{path}"
+    API_KEY = configuration["api_key"]
+    NODE_NAME = configuration["node_name"]
+
     # First get the device protocol ID
     protocol_id = send_command("QPI")
     
