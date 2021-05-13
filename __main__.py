@@ -189,7 +189,6 @@ def routine():
             "device_status": status_items[16],
 
             "parallel_number": parallel_items[0],
-            "serial_number": parallel_items[1],
             "work_mode": parallel_items[2],
             "fault_code": parallel_items[3],
             "inverter_status": parallel_items[19],
@@ -223,6 +222,10 @@ if __name__ == '__main__':
 
     # Now the firmware version
     firmware_version = send_command("QVFW")
+
+    print("protocol_id:      " + protocol_id)
+    print("serial_number:    " + serial_number)
+    print("firmware_version: " + firmware_version)
 
     while True:
         routine()
