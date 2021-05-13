@@ -5,6 +5,7 @@ import serial
 import json
 import os
 import requests
+import logging
 
 import config
 from axpert import *
@@ -14,6 +15,11 @@ from serial_utils import serial_init
 API_KEY = ""
 NODE_NAME = ""
 EMONCMS_INSTANCE = ""
+
+LOGGING_LEVEL = logging.INFO
+
+
+logging.basicConfig(level=LOGGING_LEVEL)
 
 
 def temperature_of_raspberry_pi():
@@ -32,17 +38,17 @@ def routine(ser: serial.Serial):
     status = axpert_general_status(ser)
     if status:
         request_result = emon_send(status)
-        print(">> General request result: " + request_result.text)
+        logging.info(">> General request result: " + request_result.text)
 
     warning = axpert_warning_status(ser)
     if warning:
         request_result = emon_send(status)
-        print(">> Warning request result: " + request_result.text)
+        logging.info(">> Warning request result: " + request_result.text)
 
     rpi_temp = temperature_of_raspberry_pi()
     output = {"rpi_temp": rpi_temp}
     request_result = emon_send(output)
-    print(">> Temp Request result: " + request_result.text)
+    logging.info(">> Temp Request result: " + request_result.text)
 
 
 if __name__ == '__main__':
@@ -73,16 +79,17 @@ if __name__ == '__main__':
     # Now the Device rating information
     device_rating_information = send_command(ser, "QPIRI")
 
-    print("protocol_id:      " + protocol_id)
-    print("serial_number:    " + serial_number)
-    print("firmware_version: " + firmware_version)
+    logging.debug("protocol_id:      " + protocol_id)
+    logging.debug("serial_number:    " + serial_number)
+    logging.debug("firmware_version: " + firmware_version)
 
-    print("¡ Sending hardware info...")
-    emon_send({
+    logging.debug("Sending hardware info...")
+    hardware_info_result = emon_send({
         "protocol_id": protocol_id,
         "serial_number": serial_number,
         "firmware_version": firmware_version,
     })
+    logging.info(">> Hardware info result: " + hardware_info_result.text)
 
     while True:
         routine(ser)
