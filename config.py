@@ -128,7 +128,7 @@ def load_configuration():
             config.write(configfile)
         return load_configuration()
     else:
-        return {
+        data = {
             "hostname": config['server']['hostname'],
             "port": int(config['server']['port']),
             "path": config['server']['path'],
@@ -136,3 +136,8 @@ def load_configuration():
             "api_key": config['emoncms']['apikey'],
             "node_name": config['emoncms']['node_name'],
         }
+        if "mqtt" in config:
+            data["mqtt_address"] = config["mqtt"]["address"]
+            data["mqtt_port"] = config["mqtt"]["port"] if "port" in config["mqtt"] else 1883
+            data["mqtt_keepalive"] = config["mqtt"]["keepalive"] if "keepalive" in config["mqtt"] else 60
+        return data
