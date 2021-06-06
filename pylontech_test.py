@@ -3,6 +3,7 @@ import time
 
 def start_monitoring():
     # Reference: https://powerforum.co.za/topic/6661-pylontech-serial-communication/?do=findComment&comment=80377
+    # Docs: https://www.photovoltaikforum.com/core/attachment/77133-pylon-lfp-battery-communication-protocol-rs232-v2-8-20161216-pdf/
     print("Starting low-frequency serial...")
     setup_ser = serial.Serial()
     setup_ser.port = "/dev/ttyUSB1"
