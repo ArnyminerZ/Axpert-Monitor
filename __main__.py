@@ -3,7 +3,6 @@
 from requests.models import Response
 import serial
 import json
-import os
 import requests
 import logging
 import time
@@ -12,6 +11,7 @@ import config
 from axpert import *
 from serial_utils import serial_init
 from mqtt import mqtt_setup, mqtt_publish_dict
+from tools.temperature.rpi import temperature_of_raspberry_pi as rpi_temp
 
 
 API_KEY = ""
@@ -25,11 +25,6 @@ LOGGING_LEVEL = logging.INFO
 
 
 logging.basicConfig(level=LOGGING_LEVEL)
-
-
-def temperature_of_raspberry_pi():
-    cpu_temp = os.popen("vcgencmd measure_temp").readline()
-    return cpu_temp.replace("temp=", "")
 
 
 def emon_send(output: dict) -> Response:
@@ -53,8 +48,8 @@ def routine(ser: serial.Serial):
             logging.info("Warning request result: " + request_result.text)
             mqtt_publish_dict(MQTT_TOPIC, warning)
 
-        rpi_temp = temperature_of_raspberry_pi()
-        output = {"rpi_temp": rpi_temp}
+        raspberry_temp = rpi_temp()
+        output = {"rpi_temp": raspberry_temp}
         request_result = emon_send(output)
         mqtt_publish_dict(MQTT_TOPIC, output)
         logging.info("Temp Request result: " + request_result.text)
