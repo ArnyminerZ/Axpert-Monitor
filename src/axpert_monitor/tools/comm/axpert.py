@@ -1,7 +1,7 @@
 from typing import Optional
 import re
 
-from tools.comm.SerialCommunicator import AXPERT_PRESET, SerialCommunicator
+from src.axpert_monitor.tools.comm import AXPERT_PRESET, SerialCommunicator
 
 
 class AxpertModule:

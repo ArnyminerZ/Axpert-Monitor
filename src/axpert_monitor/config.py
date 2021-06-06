@@ -5,7 +5,7 @@ from simplejson.errors import JSONDecodeError
 
 config = configparser.ConfigParser()
 
-CONFIG_FILE_NAME = "config.ini"
+CONFIG_FILE_NAME = "../../config.ini"
 
 
 def load_configuration():
