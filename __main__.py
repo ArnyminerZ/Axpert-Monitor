@@ -1,15 +1,13 @@
 #! /usr/bin/python
-
-import serial
 import logging
 import time
+from typing import Optional
 
 import config
-from axpert import *
-from serial_utils import serial_init
 from mqtt import mqtt_setup, mqtt_publish_dict
 from tools.temperature.rpi import temperature_of_raspberry_pi as rpi_temp
 from tools.remote.emon import EmonCMSNode, EmonCMSInstance
+from tools.comm.axpert import AxpertModule
 
 
 MQTT_TOPIC = ""
@@ -21,17 +19,18 @@ LOGGING_LEVEL = logging.INFO
 
 logging.basicConfig(level=LOGGING_LEVEL)
 emon_node: Optional[EmonCMSNode] = None
+axpert_module: Optional[AxpertModule] = None
 
 
-def routine(serial_conn: serial.Serial):
+def routine():
     try:
-        status = axpert_general_status(serial_conn)
+        status = axpert_module.general_status()
         if status:
             request_result = emon_node.send(status)
             logging.info("General request result: " + request_result.text)
             mqtt_publish_dict(MQTT_TOPIC, status)
 
-        warning = axpert_warning_status(serial_conn)
+        warning = axpert_module.warning_status()
         if warning:
             request_result = emon_node.send(warning)
             logging.info("Warning request result: " + request_result.text)
@@ -64,14 +63,14 @@ if __name__ == '__main__':
     # Initialize MQTT
     mqtt_setup(configuration)
 
-    ser = serial_init()
+    axpert_module = AxpertModule()
 
-    software_info = axpert_software_info(ser)
+    software_info = axpert_module.software_info()
     if software_info:
         software_info_result = emon_node.send(software_info)
         mqtt_publish_dict(MQTT_TOPIC, software_info)
         logging.info("Software info result: " + software_info_result.text)
 
     while True:
-        routine(ser)
+        routine()
         time.sleep(ROUTINE_DELAY)
