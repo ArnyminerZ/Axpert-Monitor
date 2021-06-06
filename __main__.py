@@ -1,9 +1,6 @@
 #! /usr/bin/python
 
-from requests.models import Response
 import serial
-import json
-import requests
 import logging
 import time
 
@@ -12,11 +9,9 @@ from axpert import *
 from serial_utils import serial_init
 from mqtt import mqtt_setup, mqtt_publish_dict
 from tools.temperature.rpi import temperature_of_raspberry_pi as rpi_temp
+from tools.remote.emon import EmonCMSNode
 
 
-API_KEY = ""
-NODE_NAME = ""
-EMONCMS_INSTANCE = ""
 MQTT_TOPIC = ""
 
 ROUTINE_DELAY = 5
@@ -25,32 +20,26 @@ LOGGING_LEVEL = logging.INFO
 
 
 logging.basicConfig(level=LOGGING_LEVEL)
+emon_node: Optional[EmonCMSNode] = None
 
 
-def emon_send(output: dict) -> Response:
-    output_json = json.dumps(output)
-    return requests.get(
-        f"{EMONCMS_INSTANCE}input/post?apikey={API_KEY}&node={NODE_NAME}&fulljson=" + output_json
-    )
-
-
-def routine(ser: serial.Serial):
+def routine(serial_conn: serial.Serial):
     try:
-        status = axpert_general_status(ser)
+        status = axpert_general_status(serial_conn)
         if status:
-            request_result = emon_send(status)
+            request_result = emon_node.send(status)
             logging.info("General request result: " + request_result.text)
             mqtt_publish_dict(MQTT_TOPIC, status)
 
-        warning = axpert_warning_status(ser)
+        warning = axpert_warning_status(serial_conn)
         if warning:
-            request_result = emon_send(warning)
+            request_result = emon_node.send(warning)
             logging.info("Warning request result: " + request_result.text)
             mqtt_publish_dict(MQTT_TOPIC, warning)
 
         raspberry_temp = rpi_temp()
         output = {"rpi_temp": raspberry_temp}
-        request_result = emon_send(output)
+        request_result = emon_node.send(output)
         mqtt_publish_dict(MQTT_TOPIC, output)
         logging.info("Temp Request result: " + request_result.text)
     except Exception as e:
@@ -69,6 +58,8 @@ if __name__ == '__main__':
     NODE_NAME = configuration["node_name"]
     MQTT_TOPIC = configuration["mqtt_topic"] if "mqtt_topic" in configuration else ""
 
+    emon_node = EmonCMSNode(EMONCMS_INSTANCE, API_KEY, NODE_NAME)
+
     # Initialize MQTT
     mqtt_setup(configuration)
 
@@ -76,7 +67,7 @@ if __name__ == '__main__':
 
     software_info = axpert_software_info(ser)
     if software_info:
-        software_info_result = emon_send(software_info)
+        software_info_result = emon_node.send(software_info)
         mqtt_publish_dict(MQTT_TOPIC, software_info)
         logging.info("Software info result: " + software_info_result.text)
 
