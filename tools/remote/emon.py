@@ -3,19 +3,29 @@ import json
 import requests
 
 
+class EmonCMSInstance:
+    """A class for defining the connection to an EmonCMS instance"""
+
+    def __init__(self, url, api_key):
+        """
+        Initializes the EmonCMS instance
+        :param url: The EmonCMS instance full URL. Must end with "/".
+        :param api_key: The EmonCMS instance's API key.
+        """
+        self.url = url
+        self.api_key = api_key
+
+
 class EmonCMSNode:
     """A class for doing all EmonCMS interactions"""
 
-    def __init__(self, instance, api_key, node_name):
+    def __init__(self, instance: EmonCMSInstance, node_name: str):
         """
         Initializes the EmonCMS instance.
-
-        :param instance: The EmonCMS instance full URL. Must end with "/".
-        :param api_key: The EmonCMS instance's API key.
+        :param instance: The EmonCMS instance.
         :param node_name: The EmonCMS instance's node to publish to.
         """
         self.instance = instance
-        self.api_key = api_key
         self.node_name = node_name
 
     def send(self, output: dict) -> Response:
@@ -25,6 +35,8 @@ class EmonCMSNode:
         :return: The request's result.
         """
         output_json = json.dumps(output)
+        url = self.instance.url
+        key = self.instance.api_key
         return requests.get(
-            f"{self.instance}input/post?apikey={self.api_key}&node={self.node_name}&fulljson=" + output_json
+            f"{url}input/post?apikey={key}&node={self.node_name}&fulljson=" + output_json
         )

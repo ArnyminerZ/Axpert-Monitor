@@ -9,7 +9,7 @@ from axpert import *
 from serial_utils import serial_init
 from mqtt import mqtt_setup, mqtt_publish_dict
 from tools.temperature.rpi import temperature_of_raspberry_pi as rpi_temp
-from tools.remote.emon import EmonCMSNode
+from tools.remote.emon import EmonCMSNode, EmonCMSInstance
 
 
 MQTT_TOPIC = ""
@@ -58,7 +58,8 @@ if __name__ == '__main__':
     NODE_NAME = configuration["node_name"]
     MQTT_TOPIC = configuration["mqtt_topic"] if "mqtt_topic" in configuration else ""
 
-    emon_node = EmonCMSNode(EMONCMS_INSTANCE, API_KEY, NODE_NAME)
+    emon_instance = EmonCMSInstance(EMONCMS_INSTANCE, API_KEY)
+    emon_node = EmonCMSNode(emon_instance, NODE_NAME)
 
     # Initialize MQTT
     mqtt_setup(configuration)
